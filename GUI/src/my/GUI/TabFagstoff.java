@@ -17,6 +17,10 @@ public class TabFagstoff {
     public TabFagstoff()    {
         
     }
+    /**
+     * Dette er taben for fagstoff. Foreløpig er den helt tom.
+     * @return JPanel tab3Panel returnerer panel med innholdet i tab 3
+     */
     public JPanel makeFagstoff()    {
         JPanel tab3Panel = new JPanel();
         JTextField textField = new JTextField("Her kommer alt fagstoff.");
