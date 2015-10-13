@@ -11,6 +11,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -86,35 +88,18 @@ public class TabModuloversikt {
         JXPanel panel = new JXPanel();
         panel.setLayout(new BorderLayout());
         
-          JXLabel modul1 = new JXLabel("Her er all info om modul 1");
-          JXLabel modul2 = new JXLabel("Her er all info om modul 2");
-          JXLabel modul3 = new JXLabel("Her er all info om modul 3");
-          JXLabel modul4 = new JXLabel("Her er all info om modul 4");
-          JXLabel modul5 = new JXLabel("Her er all info om modul 5");
-     //label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-     
+        ArrayList<Modul> modulList = new ArrayList<Modul>(Modul.makeModules());  
   
-     JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
-     
-     JXTaskPane modul1Pane = new JXTaskPane("Modul 1        Innlevering: Godkjent");
-     JXTaskPane modul2Pane = new JXTaskPane("Modul 2        Innlevering: Ikke godkjent");
-     JXTaskPane modul3Pane = new JXTaskPane("Modul 3        Innlevering: Under vurdering");
-     JXTaskPane modul4Pane = new JXTaskPane("Modul 4        Innlevering: Ikke levert");;
-     JXTaskPane modul5Pane = new JXTaskPane("Modul 5        Innlevering: Ikke levert");
-     
-     modul1Pane.add(modul1);
-     modul2Pane.add(modul2);
-     modul3Pane.add(modul3);
-     modul4Pane.add(modul4);
-     modul5Pane.add(modul5);
-     
+     JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();  
+     for (Modul modul : modulList)  {
+         JXTaskPane modulPane = new JXTaskPane(modul.getName() + modul.getStatus());
+         modulPane.setCollapsed(true);
+         modulPane.add(modul.getInnhold());
+         taskPaneContainer.add(modulPane);
+     }
+    
      //modul1Pane.addActionListener(new PaneActionListener());
-     taskPaneContainer.add(modul1Pane);
-     taskPaneContainer.add(modul2Pane);
-     taskPaneContainer.add(modul3Pane);
-     taskPaneContainer.add(modul4Pane);
-     taskPaneContainer.add(modul5Pane);
-     
+         
      panel.add(taskPaneContainer);//, BorderLayout.CENTER);
      
      return panel;
