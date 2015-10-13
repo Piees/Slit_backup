@@ -30,11 +30,13 @@ public class MakeGUI {
         makeFrame();
     }
 
+    /*   
     public static void main(String[] args) {
 
         MakeGUI forside = new MakeGUI();
     }
-
+    */
+    
     /**
      * Lager vinduet. Vinduet har GridBagLayout (enn så lenge i hvert fall).
      * Kaller makeCommon(). 
