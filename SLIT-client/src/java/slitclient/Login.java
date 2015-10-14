@@ -1,15 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This is the login screen that greets the user of the SLIT program.
+ * 
+ * The GUI design and logic is just blatantly ripped of a netbeans 
+ * example, the only exception is the loginButtons ActionListener.
+ *
  */
 package slitclient;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-//import java.sql.Connection;
-//import java.sql.PreparedStatement;
-//import java.sql.ResultSet;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,20 +19,14 @@ import javax.swing.JTextField;
 import db.dbConnectorRemote;
 import java.util.ArrayList;
 
-//import my.dbconnection.DBConnection;
-
 /**
  *
  * @author Viktor Setervang
  */
 
 public class Login {
-    //private Connection connection = new DBConnection().connect();
-    private dbConnectorRemote dbConnector;
     
-    public Login(dbConnectorRemote dbConnector) {
-        this.dbConnector = dbConnector;
-        
+    public Login() {        
        	JFrame frame = new JFrame("Login");
 	frame.setSize(300, 150);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,9 +64,11 @@ public class Login {
             public void actionPerformed(ActionEvent e) {    
                 String userName = userText.getText();
                 String pwd = passwordText.getText();
-                ArrayList<String> loginResult;
-                loginResult = dbConnector.login(userName, pwd);
-               
+                
+                EJBConnector ejbConnector = new EJBConnector();
+                dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+                ArrayList<String> loginResult = dbConnector.login(userName, pwd);
+              
                 if (loginResult.size() == 2) {
                     // index 0 == userName, index 1 == userType
                     if (loginResult.get(1).equals("student")) {
