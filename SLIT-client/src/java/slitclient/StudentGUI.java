@@ -5,9 +5,11 @@
  */
 package slitclient;
 
+import db.dbConnector;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -19,45 +21,51 @@ import javax.swing.JTabbedPane;
 
 /**
  *
- * @author Arild-Bærbar
+ * @author Arild H�yland
  */
-public class MakeGUI {
+public class StudentGUI {
 
     JFrame frame;
     TabForside tabForside;
     TabModuloversikt tabModuloversikt;
     TabFagstoff tabFagstoff;
+    String nameOfUser;
 
     /**
      * Constructor for MakeGUI. Oppretter objekter av alle tab-klassene, og
      * kaller makeFrame()
      */
-    public MakeGUI() {
+    public StudentGUI(String userName) {
         tabForside = new TabForside();
         tabModuloversikt = new TabModuloversikt();
         tabFagstoff = new TabFagstoff();
+        //nameOfUser = getNameOfUser(userName);
         makeFrame();
     }
-
-/*    public static void main(String[] args) {
-
-        MakeGUI forside = new MakeGUI();
-    }*/
-
+    /*
+    public String getNameOfUser(String userName)   {
+        ArrayList<String> queryResults = dbConnector.multiQuery("SELECT fname, ename "
+                                     + "FROM User WHERE userName = " + userName +";");
+        String returnString = null;
+        for(String string : queryResults)   {
+            returnString += string;
+        }
+        return returnString;
+    }
     /**
      * Lager vinduet. Vinduet har GridBagLayout (enn så lenge i hvert fall).
      * Kaller makeCommon(). 
      * Kaller også makeTabs().
      */
     public void makeFrame() {
-        frame = new JFrame();
+        frame = new JFrame("SLIT - " + nameOfUser);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel contentPane = (JPanel) frame.getContentPane();
         GridBagLayout gblContent = new GridBagLayout();
         contentPane.setLayout(gblContent);
        
         
-        JPanel commonContent =  makeCommon();
+        JPanel commonContent =  makeCommon(nameOfUser);
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
         gbcCommon.gridy = 0;
@@ -85,7 +93,7 @@ public class MakeGUI {
      * bør gjøre nå.
      * @return JPanel content panelet med innholdet som er felles for alle faner
     */
-    public JPanel makeCommon() {
+    public JPanel makeCommon(String userName) {
 
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout());

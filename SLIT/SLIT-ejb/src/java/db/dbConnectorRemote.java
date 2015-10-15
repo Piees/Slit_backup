@@ -26,4 +26,6 @@ public interface dbConnectorRemote {
     public Connection dbConnection();
     
     public ArrayList<String> login(String userName, String pwd);
+    
+    public ArrayList<String> multiQuery(String query);
 }

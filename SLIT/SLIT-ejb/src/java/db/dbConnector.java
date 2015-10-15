@@ -83,6 +83,24 @@ public class dbConnector implements dbConnectorRemote {
         return queryResult;
     }
     
+    @Override
+    public ArrayList<String> multiQuery(String query)   {
+        Connection dbConnection = dbConnection();
+        ArrayList<String> queryResults = new ArrayList<>();
+        try {
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            int i = 0;
+            while(rs.next())    {
+                queryResults.add(rs.getString(i));
+                i++;
+            }
+        }
+        catch (SQLException e)  {
+            System.out.println(e);
+        }
+        return queryResults;
+    }
     /**
      * This method is used by the Login class to check if the user
      * has supplied a correct userName and password combination.

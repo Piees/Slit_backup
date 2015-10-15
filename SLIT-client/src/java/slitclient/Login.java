@@ -39,6 +39,7 @@ public class Login {
 	JLabel userLabel = new JLabel("User");
 	userLabel.setBounds(10, 10, 80, 25);
 	frame.add(userLabel);
+        
 	JTextField userText = new JTextField(20);
 	userText.setBounds(100, 10, 160, 25);
 	frame.add(userText);
@@ -72,12 +73,12 @@ public class Login {
                 if (loginResult.size() == 2) {
                     // index 0 == userName, index 1 == userType
                     if (loginResult.get(1).equals("student")) {
-                        MakeGUI studentGUI = new MakeGUI();
+                        StudentGUI studentGUI = new StudentGUI(loginResult.get(0));
                         //StudentGUI studentGUI = new StudentGUI(loginResult.get(0))
                     }
                     else if (loginResult.get(1).equals("teacher") || 
                             loginResult.get(1).equals("helpTeacher")) {
-                        MakeGUI teacherGUI = new MakeGUI();
+                        TeacherGUI teacherGUI = new TeacherGUI(loginResult.get(0));
                         //TeacherGUI teacherGUI = new teacherGUI(loginResult.get(0))
                     }
                     else {

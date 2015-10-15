@@ -18,7 +18,7 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 
 /**
  *
- * @author Arild-BÃ¦rbar
+ * @author Arild Høyland
  */
 public class TabModuloversikt {
     private final int IS109 = 5;
