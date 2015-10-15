@@ -12,7 +12,7 @@ import org.jdesktop.swingx.JXLabel;
 
 /**
  *
- * @author Arild-Bærbar
+ * @author Arild
  */
 public class Modul {
     String name;

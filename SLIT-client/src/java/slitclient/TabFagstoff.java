@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 
 /**
  *
- * @author Arild-Bærbar
+ * @author Arild
  */
 public class TabFagstoff {
     

@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author Arild-Bærbar
+ * @author Arild
  */
 public class TabForside {
     

@@ -74,11 +74,13 @@ public class Login {
                     // index 0 == userName, index 1 == userType
                     if (loginResult.get(1).equals("student")) {
                         StudentGUI studentGUI = new StudentGUI(loginResult.get(0));
+                        frame.setVisible(false);
                         //StudentGUI studentGUI = new StudentGUI(loginResult.get(0))
                     }
                     else if (loginResult.get(1).equals("teacher") || 
                             loginResult.get(1).equals("helpTeacher")) {
                         TeacherGUI teacherGUI = new TeacherGUI(loginResult.get(0));
+                        frame.setVisible(false);
                         //TeacherGUI teacherGUI = new teacherGUI(loginResult.get(0))
                     }
                     else {

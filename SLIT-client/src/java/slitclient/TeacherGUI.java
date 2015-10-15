@@ -20,7 +20,7 @@ import javax.swing.JTabbedPane;
 
 /**
  *
- * @author Arild Høyland
+ * @author Arild
  */
 public class TeacherGUI {
 
