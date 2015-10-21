@@ -1,5 +1,5 @@
 /*
- * The purpose of this class is to connect to the EJB dbConnector, and provide 
+ * The purpose of this class is to connect to the EJB dbConnectorRemote, and provide 
  * this connection to other classes thats needs it by using a simple getMethod.
  *  
  * This way we will only need to change the adress one place if we ever need

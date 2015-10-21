@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import db.dbConnector;
 import db.dbConnectorRemote;
 import java.util.ArrayList;
 
@@ -70,18 +71,18 @@ public class Login {
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
                 ArrayList<String> loginResult = dbConnector.login(userName, pwd);
               
-                if (loginResult.size() == 2) {
-                    // index 0 == userName, index 1 == userType
+                if (loginResult.size() == 4) {
+                    // index 0 == userName, index 1 == userType, index 2 = fname, index 3 = lname
                     if (loginResult.get(1).equals("student")) {
-                        StudentGUI studentGUI = new StudentGUI(loginResult.get(0));
+                        //create StudentGUI object with the list
+                        StudentGUI studentGUI = new StudentGUI(loginResult);
                         frame.setVisible(false);
-                        //StudentGUI studentGUI = new StudentGUI(loginResult.get(0))
                     }
                     else if (loginResult.get(1).equals("teacher") || 
                             loginResult.get(1).equals("helpTeacher")) {
-                        TeacherGUI teacherGUI = new TeacherGUI(loginResult.get(0));
+                        //create TeacherGUI object with the list
+                        TeacherGUI teacherGUI = new TeacherGUI(loginResult);
                         frame.setVisible(false);
-                        //TeacherGUI teacherGUI = new teacherGUI(loginResult.get(0))
                     }
                     else {
                         JOptionPane.showMessageDialog(null, "userType invalid, "
@@ -103,7 +104,5 @@ public class Login {
             }
         });
     }
-    //public static void main(String[] args) {          
-     //   new Login();
-   // }
+
 }

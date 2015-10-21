@@ -9,6 +9,7 @@ import db.dbConnector;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -28,17 +29,22 @@ public class TeacherGUI {
     TabForside tabForside;
     TabModuloversikt tabModuloversikt;
     TabFagstoff tabFagstoff;
+    String userName;
     String nameOfUser;
 
     /**
      * Constructor for MakeGUI. Oppretter objekter av alle tab-klassene, og
      * kaller makeFrame()
      */
-    public TeacherGUI(String userName) {
+    public TeacherGUI(ArrayList<String> userInfo) {
+        //gets userName from index 0 in ArrayList userInfo
+        userName = userInfo.get(0);
+        //joins fname and lname from index 1 and 2 in ArrayList userInfo
+        nameOfUser = userInfo.get(2) + " " + userInfo.get(3);
         tabForside = new TabForside();
-        tabModuloversikt = new TabModuloversikt();
+        //create the moduloversikt-tab for the given userType
+        tabModuloversikt = new TabModuloversikt(userInfo.get(1));
         tabFagstoff = new TabFagstoff();
-        //nameOfUser = getNameOfUser(userName);
         makeFrame();
     }
     /*
@@ -59,7 +65,7 @@ public class TeacherGUI {
         contentPane.setLayout(gblContent);
        
         
-        JPanel commonContent =  makeCommon(nameOfUser);
+        JPanel commonContent =  makeCommon();
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
         gbcCommon.gridy = 0;
@@ -87,7 +93,7 @@ public class TeacherGUI {
      * bør gjøre nå.
      * @return JPanel content panelet med innholdet som er felles for alle faner
     */
-    public JPanel makeCommon(String userName) {
+    public JPanel makeCommon() {
 
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout());
@@ -98,7 +104,7 @@ public class TeacherGUI {
         JLabel logoLabel = new JLabel("LOGO");
         content.add(logoLabel, BorderLayout.CENTER);
 
-        JButton nameButton = new JButton("Student Studentsen");
+        JButton nameButton = new JButton(nameOfUser);
         content.add(nameButton, BorderLayout.EAST);
 
         return content;

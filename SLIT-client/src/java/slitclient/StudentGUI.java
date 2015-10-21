@@ -29,17 +29,22 @@ public class StudentGUI {
     TabForside tabForside;
     TabModuloversikt tabModuloversikt;
     TabFagstoff tabFagstoff;
+    String userName;
     String nameOfUser;
 
     /**
      * Constructor for MakeGUI. Oppretter objekter av alle tab-klassene, og
      * kaller makeFrame()
      */
-    public StudentGUI(String userName) {
+    public StudentGUI(ArrayList<String> userInfo) {
+        //gets userName in index 0 from ArrayList userInfo
+        userName = userInfo.get(0);
+        //joins fname and lname in index 2 and 3 from ArrayList userInfo
+        nameOfUser = userInfo.get(2) + " " + userInfo.get(3);
         tabForside = new TabForside();
-        tabModuloversikt = new TabModuloversikt();
+        //create the moduloversikt-tab for the given userType
+        tabModuloversikt = new TabModuloversikt(userInfo.get(1));
         tabFagstoff = new TabFagstoff();
-        //nameOfUser = getNameOfUser(userName);
         makeFrame();
     }
     /*
@@ -65,7 +70,7 @@ public class StudentGUI {
         contentPane.setLayout(gblContent);
        
         
-        JPanel commonContent =  makeCommon(nameOfUser);
+        JPanel commonContent =  makeCommon();
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
         gbcCommon.gridy = 0;
@@ -93,7 +98,7 @@ public class StudentGUI {
      * bør gjøre nå.
      * @return JPanel content panelet med innholdet som er felles for alle faner
     */
-    public JPanel makeCommon(String userName) {
+    public JPanel makeCommon() {
 
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout());
@@ -104,7 +109,7 @@ public class StudentGUI {
         JLabel logoLabel = new JLabel("LOGO");
         content.add(logoLabel, BorderLayout.CENTER);
 
-        JButton nameButton = new JButton("Student Studentsen");
+        JButton nameButton = new JButton(nameOfUser);
         content.add(nameButton, BorderLayout.EAST);
 
         return content;

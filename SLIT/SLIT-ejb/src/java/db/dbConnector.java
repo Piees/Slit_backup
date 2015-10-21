@@ -5,18 +5,18 @@
  */
 package db;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
  *
@@ -26,7 +26,7 @@ import javax.naming.NamingException;
 public class dbConnector implements dbConnectorRemote {
 
     // JDBC driver name and database URL
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+    //static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
     static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
     private static final String USERNAME = "yngve";
     private static final String PASSWORD = "a_team";
@@ -36,7 +36,7 @@ public class dbConnector implements dbConnectorRemote {
     @Override
     public Connection dbConnection() {
         Connection dbConnection = null;
-                // Check driver
+        /*        // Check driver
         try {
             Class.forName(JDBC_DRIVER);
         } catch (ClassNotFoundException e) {
@@ -45,7 +45,7 @@ public class dbConnector implements dbConnectorRemote {
        	//return;
         }
         System.out.println("MySQL JDBC Driver Registered!");
-
+        */
         
         // Connection
         try {
@@ -128,6 +128,8 @@ public class dbConnector implements dbConnectorRemote {
             if (rs.next()) {
                 loginResults.add(userName);
                 loginResults.add(rs.getString("userType"));
+                loginResults.add(rs.getString("fname"));
+                loginResults.add(rs.getString("lname"));
             } 
             else {
                 loginResults.add("Username Password combination invalid");              
@@ -139,4 +141,82 @@ public class dbConnector implements dbConnectorRemote {
         }
         return loginResults;
     }
+    
+    @Override
+    public void uploadFileIntoResource(File file,
+                                        String userName, String title) {
+        System.out.println("Inserter uploadFileIntoResources1");
+        Connection connection = dbConnection();
+        System.out.println("Inserter uploadFileIntoResources2");
+        
+        /*
+        java.util.Date dt = new java.util.Date();
+        java.text.SimpleDateFormat sdf = 
+            new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String tempCurrentTime = sdf.format(dt);        
+        java.sql.Time currentTime  */
+        
+        
+        //java.sql.Date currentTime = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+        String insertStatement = "INSERT INTO Resources (resourceFile, userName, title)" + 
+                "VALUES (?, ?, ?)";
+        
+        //System.out.println(insertStatement);
+        
+        FileInputStream fileInput = null;
+        try {
+            fileInput = new FileInputStream(file);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
+        try {
+            PreparedStatement ps = connection.prepareStatement(insertStatement);
+            ps.setBinaryStream(1, fileInput);
+            ps.setString(2, userName);
+            ps.setString(3, title);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+           
+        }
+
+               
+    }
+    
+    // Should probably not be innside this class
+    /*
+    public enum DeliveryStatus {
+        VURDERT, IKKEVURDERT, SETT, IKKESETT;      
+    }
+    
+    @Override
+    public void uploadFileIntoDelivery(int idModul, File fileToUpload, String userName) {
+        Connection connection = dbConnection();
+       
+        java.util.Date dt = new java.util.Date();
+        java.text.SimpleDateFormat sdf = 
+            new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentTime = sdf.format(dt);
+        // currentTime == "2015-10-19 16:19:54" samme som pcen. 
+        // Om man ikke kan inserte en string som DATETIME
+        // test:
+        //@Temporal(TemporalType.TIMESTAMP)
+        //java.util.Date myDate;
+        
+        // temp
+        DeliveryStatus status = DeliveryStatus.IKKESETT;
+        String insertStatement = "INSERT INTO Delivery (idModul, deliveryFile, deliveryDate, deliveryStatus, deliveredBy)" +
+                "VALUES ("+ idModul + ", " + fileToUpload + ", " + currentTime + ", " + status  + ", " + userName + ")";
+        Statement statement;
+        
+        
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(insertStatement);
+        } catch (SQLException ex) {
+                Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    */
 }

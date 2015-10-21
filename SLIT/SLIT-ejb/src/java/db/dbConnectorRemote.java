@@ -5,6 +5,7 @@
  */
 package db;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
 import javax.ejb.Remote;
@@ -28,4 +29,8 @@ public interface dbConnectorRemote {
     public ArrayList<String> login(String userName, String pwd);
     
     public ArrayList<String> multiQuery(String query);
+    
+    public void uploadFileIntoResource(File file,
+                                        String userName, String title);
+
 }
