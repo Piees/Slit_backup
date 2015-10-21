@@ -94,8 +94,6 @@ public class GUIFileUploader {
                     values.add("viktos08");
                     values.add("awesomeness");
                     values.add(GUIFileUploader.this.file);
-                    //insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values)
-                    //FileInputStream file = new FileInputStream(GUIFileUploader.this.file);
                     uploader.insertIntoDB("Resources", columns, values);
                 }
                 else {
