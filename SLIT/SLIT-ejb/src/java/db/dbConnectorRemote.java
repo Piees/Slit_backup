@@ -29,8 +29,12 @@ public interface dbConnectorRemote {
     public ArrayList<String> login(String userName, String pwd);
     
     public ArrayList<String> multiQuery(String query);
-    
-    public void uploadFileIntoResource(File file,
-                                        String userName, String title);
 
+    public void insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
+    
+    public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
+            tables, ArrayList<String> where);
+    
+    public int countRows(String column, String tableName);     
+    
 }

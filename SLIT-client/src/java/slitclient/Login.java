@@ -53,6 +53,10 @@ public class Login {
 	passwordText.setBounds(100, 40, 160, 25);
 	frame.add(passwordText);
 
+        JButton createButton = new JButton("create user");
+	createButton.setBounds(95, 80, 80, 25);
+	frame.add(createButton);
+        
 	JButton loginButton = new JButton("login");
 	loginButton.setBounds(10, 80, 80, 25);
 	frame.add(loginButton);
@@ -67,7 +71,7 @@ public class Login {
                 String userName = userText.getText();
                 String pwd = passwordText.getText();
                 
-                EJBConnector ejbConnector = new EJBConnector();
+                EJBConnector ejbConnector = EJBConnector.getInstance();
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
                 ArrayList<String> loginResult = dbConnector.login(userName, pwd);
               
@@ -103,6 +107,14 @@ public class Login {
                         + " button has been pressed");                
             }
         });
+        
+        createButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                new CreateUser(); 
+                frame.dispose();
+            }
+        });        
     }
 
 }

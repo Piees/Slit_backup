@@ -43,7 +43,7 @@ public class StudentGUI {
         nameOfUser = userInfo.get(2) + " " + userInfo.get(3);
         tabForside = new TabForside();
         //create the moduloversikt-tab for the given userType
-        tabModuloversikt = new TabModuloversikt(userInfo.get(1));
+        tabModuloversikt = new TabModuloversikt(userInfo.get(1), frame);
         tabFagstoff = new TabFagstoff();
         makeFrame();
     }
@@ -135,8 +135,5 @@ public class StudentGUI {
         tabbedPane.addTab("Fagstoff", null, tab3, null);
         return tabbedPane;
     }
-    
-    
 
-    
 }

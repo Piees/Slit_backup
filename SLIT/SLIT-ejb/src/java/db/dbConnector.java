@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -31,11 +32,10 @@ public class dbConnector implements dbConnectorRemote {
     private static final String USERNAME = "yngve";
     private static final String PASSWORD = "a_team";
     //private String queryResult;
-    private Connection DBConnection;
+    private static Connection DBConnection;
     
     @Override
     public Connection dbConnection() {
-        Connection dbConnection = null;
         /*        // Check driver
         try {
             Class.forName(JDBC_DRIVER);
@@ -48,14 +48,21 @@ public class dbConnector implements dbConnectorRemote {
         */
         
         // Connection
-        try {
-            dbConnection = DriverManager.getConnection(
+        if (DBConnection == null) {
+            try {           
+                DBConnection = DriverManager.getConnection(
                     DB_URL, USERNAME, PASSWORD);
-        } catch (SQLException ex) {
-            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
-            //return null;
+                System.out.println("New connection established!");
+            } catch (SQLException ex) {
+                Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+                //return null;
+            }
+            return DBConnection;
         }
-        return dbConnection;
+        else {
+            System.out.println("Old connection reused");
+            return DBConnection;
+        }
     }
     
     @Override
@@ -143,80 +150,153 @@ public class dbConnector implements dbConnectorRemote {
     }
     
     @Override
-    public void uploadFileIntoResource(File file,
-                                        String userName, String title) {
-        System.out.println("Inserter uploadFileIntoResources1");
-        Connection connection = dbConnection();
-        System.out.println("Inserter uploadFileIntoResources2");
-        
-        /*
-        java.util.Date dt = new java.util.Date();
-        java.text.SimpleDateFormat sdf = 
-            new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String tempCurrentTime = sdf.format(dt);        
-        java.sql.Time currentTime  */
-        
-        
-        //java.sql.Date currentTime = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-        String insertStatement = "INSERT INTO Resources (resourceFile, userName, title)" + 
-                "VALUES (?, ?, ?)";
-        
-        //System.out.println(insertStatement);
-        
-        FileInputStream fileInput = null;
-        try {
-            fileInput = new FileInputStream(file);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+    public void insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values) {
+        //create the beginning of the insert-string
+        String insert = "INSERT INTO " + table + "(";
+      
+        int countColumns = 0;
+        //while we have more columns than the current count +1, add 
+        //column.get(countColumns) +", "; to the insert-string
+        while(columns.size() > (countColumns +1))   {
+            insert += columns.get(countColumns) + ", ";
+            countColumns++;
         }
-         
+        //if columns.size() is smaller than countColumns+1, this means that
+        //this is the last column. Therefore we can't add a comma at the end,
+        //but instead we can close the paranthesis and continue to values
+        insert += columns.get(countColumns) + ") VALUES(";
+        
+        int countValues = 0;
+        //same principle as for columns here
+        //we insert ? here instead of values, as we're going to add
+        //the values using the setString() method of PreparedStatement
+        while(values.size() > (countValues + 1))   {
+            insert += "?, ";
+            countValues++;
+        }
+        //same principle as for columns, we don't have any more values, therefore 
+        //we make this the end of the insert-string
+        insert +=  "?);";
+        System.out.println("metode insert kalt");
+        System.out.print(insert);
+        DBConnection = dbConnection();
         try {
-            PreparedStatement ps = connection.prepareStatement(insertStatement);
-            ps.setBinaryStream(1, fileInput);
-            ps.setString(2, userName);
-            ps.setString(3, title);
+            System.out.println("try i insert-metode");
+            PreparedStatement ps = DBConnection.prepareStatement(insert);
+            int i = 1;
+            int index = 0;
+            //this sets the "?" in our insert-string as the corresponding -1
+            //index in the arraylist
+            //meaning our first "?" will have the first element (index 0) of our arraylist
+            //because arraylist index starts at 0, and the index for counting "?" in our
+            //insert-string starts at 1, this must always be one larger than the arraylist-index
+            while (values.size() >= i) {
+                if(values.get(index) instanceof String) {
+                    ps.setString(i, values.get(index).toString());
+                }           
+                else if (values.get(index) instanceof Integer) {
+                    ps.setInt(i, (int) values.get(index));
+                }           
+                else if (values.get(index) instanceof Boolean) {
+                    ps.setBoolean(i,(Boolean) values.get(index));
+                }           
+                else if (values.get(index) instanceof File) {
+                    File file = (File) values.get(index);
+                    FileInputStream fileInput = null;
+                    try {
+                        fileInput = new FileInputStream(file);
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    ps.setBinaryStream(i,(FileInputStream) fileInput);
+                }           
+                else if (values.get(index) instanceof java.sql.Timestamp) {
+                    ps.setTimestamp(i,(java.sql.Timestamp) values.get(index)); 
+                }
+                else {
+                    System.out.println("INVALID OBJECT TYPE!");
+                }
+                index++;
+                i++;
+            }
+            System.out.println(ps);
             ps.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
-           
         }
-
-               
+        catch (SQLException ex)  {
+            System.out.println("CATCH I INSERT-METODE");
+            System.out.println(ex);
+        }
     }
-    
-    // Should probably not be innside this class
-    /*
-    public enum DeliveryStatus {
-        VURDERT, IKKEVURDERT, SETT, IKKESETT;      
+    public int countRows(String column, String tableName)    {
+        String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
+        String numberOfRows = "";
+        DBConnection = dbConnection();
+        try {
+            PreparedStatement ps = DBConnection.prepareStatement(count);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            numberOfRows = rs.getString(1);
+            System.out.println("ANTALL REKKER I MODUL:" + numberOfRows);
+        }
+        catch (SQLException e)  {
+            System.out.println(e);
+        }
+        int returnInt = Integer.parseInt(numberOfRows);
+        return returnInt;
     }
     
     @Override
-    public void uploadFileIntoDelivery(int idModul, File fileToUpload, String userName) {
-        Connection connection = dbConnection();
-       
-        java.util.Date dt = new java.util.Date();
-        java.text.SimpleDateFormat sdf = 
-            new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String currentTime = sdf.format(dt);
-        // currentTime == "2015-10-19 16:19:54" samme som pcen. 
-        // Om man ikke kan inserte en string som DATETIME
-        // test:
-        //@Temporal(TemporalType.TIMESTAMP)
-        //java.util.Date myDate;
+    public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
+            tables, ArrayList<String> where)    {
+        String query = "SELECT ";
+        ArrayList<String> queryResults = new ArrayList<>();
         
-        // temp
-        DeliveryStatus status = DeliveryStatus.IKKESETT;
-        String insertStatement = "INSERT INTO Delivery (idModul, deliveryFile, deliveryDate, deliveryStatus, deliveredBy)" +
-                "VALUES ("+ idModul + ", " + fileToUpload + ", " + currentTime + ", " + status  + ", " + userName + ")";
-        Statement statement;
-        
-        
-        try {
-            statement = connection.createStatement();
-            statement.executeUpdate(insertStatement);
-        } catch (SQLException ex) {
-                Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        int countColumns = 0;
+        while(columns.size() > (countColumns +1))   {
+            query += columns.get(countColumns) + ", ";
+            countColumns++;
         }
-    }
-    */
+        query += columns.get(countColumns) + " FROM ";
+        
+        int countTables = 0;
+        while(tables.size() > (countTables +1)) {
+            query += tables.get(countTables) + ", ";
+            countTables++;
+        }
+        query += tables.get(countTables);
+        if(where != null)    {
+            int countWhere = 0;
+            query += " WHERE ";
+                while(where.size() > (countWhere +1))   {
+                query += where.get(countWhere) + ", ";
+                countWhere ++;
+                }
+            query += where.get(countWhere) + ";";
+        }
+        else {
+            query += ";";
+        }
+        DBConnection = dbConnection();
+        try {
+            System.out.println("try i multi-query metode");
+            PreparedStatement ps = DBConnection.prepareStatement(query);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while (rs.next())   {
+                int i = 1;
+                while (columnCount >= i)    {
+                    queryResults.add(rs.getString(i));
+                    i++;
+                }
+            }
+            System.out.println("QueryResults-liste HER: " + queryResults.size());
+        }
+        catch (SQLException e)  {
+            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
+            System.out.println(e);
+        }
+        return queryResults;
+    }    
 }

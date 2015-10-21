@@ -9,11 +9,7 @@ import db.dbConnectorRemote;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 import javax.swing.*;
  
 /**
@@ -85,13 +81,22 @@ public class GUIFileUploader {
         uploadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EJBConnector ejbConnector = new EJBConnector();
+                EJBConnector ejbConnector = EJBConnector.getInstance();
                 //InserterRemote uploader = ejbConnector.getInserter();
                 dbConnectorRemote uploader = ejbConnector.getEjbRemote();
                 if (GUIFileUploader.this.file != null) {
                     System.out.println("file is not null");
+                    ArrayList<String> columns = new ArrayList<>();
+                    ArrayList<Object> values = new ArrayList<>();
+                    columns.add("userName");
+                    columns.add("title");
+                    columns.add("resourceFile");
+                    values.add("viktos08");
+                    values.add("awesomeness");
+                    values.add(GUIFileUploader.this.file);
+                    //insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values)
                     //FileInputStream file = new FileInputStream(GUIFileUploader.this.file);
-                    uploader.uploadFileIntoResource(GUIFileUploader.this.file, "viktos08", "True awesomeness");
+                    uploader.insertIntoDB("Resources", columns, values);
                 }
                 else {
                     statusLabel.setText("No file selected!" );
