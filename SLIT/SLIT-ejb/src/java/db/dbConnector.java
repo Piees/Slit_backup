@@ -15,9 +15,20 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import com.google.common.collect.ImmutableMap;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  *
@@ -33,6 +44,9 @@ public class dbConnector implements dbConnectorRemote {
     private static final String PASSWORD = "a_team";
     //private String queryResult;
     private static Connection DBConnection;
+    ArrayList<String> updateUsersArrayList;
+    private Map<String, String> userMap;
+    public static HashMap<String, Map> allUsersHashMap;
     
     @Override
     public Connection dbConnection() {
@@ -227,6 +241,8 @@ public class dbConnector implements dbConnectorRemote {
             System.out.println(ex);
         }
     }
+    
+    @Override
     public int countRows(String column, String tableName)    {
         String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
         String numberOfRows = "";
@@ -299,4 +315,112 @@ public class dbConnector implements dbConnectorRemote {
         }
         return queryResults;
     }    
+    
+    //HER KOMMER UPDATEUSERS, MÅ FLYTTES TIL ANNEN EJB
+    @Override
+    public Map<String, String> eachUserMap(int fromIndex) {
+        userMap = ImmutableMap.of(
+                "userType", updateUsersArrayList.get(fromIndex), //fromIndex (+1,2,3,4)
+                "mail", updateUsersArrayList.get(fromIndex + 1),
+                "fname", updateUsersArrayList.get(fromIndex + 2),
+                "lname", updateUsersArrayList.get(fromIndex + 3),
+                "userName", updateUsersArrayList.get(fromIndex + 4)
+            );
+        return userMap;
+    }
+    @Override
+    public void updateUsersHashMap() {
+        ArrayList<String> select = new ArrayList<>(Arrays.asList("userType,"
+                + "mail, fname, lname, userName"));
+        ArrayList<String> from = new ArrayList<>(Arrays.asList("User"));
+        ArrayList<String> where = new ArrayList<>(Arrays.asList("userName != 'null'"));
+        updateUsersArrayList = multiQuery(select, from, where);
+        allUsersHashMap = new HashMap<>(); //make global
+        for(int i = 0; i < updateUsersArrayList.size(); i += 5) {
+            Map<String, String> updateUserHashMapHelper = eachUserMap(i);
+            allUsersHashMap.put(updateUserHashMapHelper.get("userName"), 
+                        updateUserHashMapHelper);
+        }
+    }
+    
+    //@Override
+    public HashMap<String, Map> getAllUsersHashMap() {
+        return allUsersHashMap;
+    }
+    
+    
+    
+    /**
+     * Lager contactPanel som er inni forside-taben. Returnerer til makeForsideTab()
+     * @return JPanel contactPanel panelet som viser kontaktene (lærere)
+     */
+    @Override
+    public JPanel makeContactPanel()    {
+        JPanel contactPanel = new JPanel();
+        GridBagLayout contactLayout = new GridBagLayout();
+        contactPanel.setLayout(contactLayout);
+        
+//        for(int i = 0; i < getAllUsersHashMap().size(); i++) {
+//            GridBagConstraints fishCon = new GridBagConstraints();
+//            JLabel contactLabel = new JLabel(getAllUsersHashMap().get(i));
+//        }
+        System.out.println("Pre-FISH");
+        for(Entry<String, Map> entry : getAllUsersHashMap().entrySet()) {
+            String key = entry.getKey();
+            System.out.println("FISH!");
+            System.out.println(key);
+        }
+
+        GridBagConstraints gbcSearchField = new GridBagConstraints();
+        JTextField searchField = new JTextField(20);
+        gbcSearchField.gridx = 0;
+        gbcSearchField.gridy = 0;
+        gbcSearchField.gridwidth = 2;
+        contactLayout.setConstraints(searchField, gbcSearchField);
+        //searchField.addActionListener(new returnSearchResults); //tbi
+        contactPanel.add(searchField);        
+        
+        GridBagConstraints gbcContact = new GridBagConstraints();
+        JLabel contactLecturer1 = new JLabel("<html>Hallgeir Nilsen,<br>"
+                + "hallgeir.nilsen@uia.no,<br>"
+                + "Kontor: H1 011</html>");
+        String mailHallgeir = "hallgeir.nilsen@uia.no";
+        gbcContact.gridx = 0;
+        gbcContact.gridy = 1;
+        contactLayout.setConstraints(contactLecturer1, gbcContact);
+        //contactLecturer1.addActionListener(new sendMailActionListener(mailHallgeir));
+        contactPanel.add(contactLecturer1);
+
+        JButton contactLecturer2 = new JButton("<html>Even Larsen,<br>"
+                + "even.larsen@uia.no,<br>"
+                + "Kontor: H1 007</html>");
+        String mailEven = "even.larsen@uia.no";
+        gbcContact.gridx = 1;
+        gbcContact.gridy = 1;
+        contactLayout.setConstraints(contactLecturer2, gbcContact);
+        //contactLecturer2.addActionListener(new sendMailActionListener(mailEven));
+        contactPanel.add(contactLecturer2);
+
+        JButton contactTA1 = new JButton("<html>Arild Høyland,<br>"
+                + "arildh93@gmail.com</html>");
+        String mailArild = "arildh93@gmail.com";
+        gbcContact.gridx = 0;
+        gbcContact.gridy = 2;
+        contactLayout.setConstraints(contactTA1, gbcContact);
+        //contactTA1.addActionListener(new sendMailActionListener(mailArild));
+        contactPanel.add(contactTA1);
+
+        JButton contactTA2 = new JButton("<html>Robin Rondestvedt,<br>"
+                + "robin@example.com</html>");
+        String mailRobin = "robin@example.com";
+        gbcContact.gridx = 1;
+        gbcContact.gridy = 2;
+        contactLayout.setConstraints(contactTA2, gbcContact);
+        //contactTA2.addActionListener(new sendMailActionListener(mailRobin));
+        contactPanel.add(contactTA2);
+    return contactPanel;
+    }
+    
+    
+    
 }

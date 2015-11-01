@@ -5,6 +5,8 @@
  */
 package slitclient;
 
+import db.dbConnectorRemote;
+import db.dbConnector;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -14,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -31,7 +35,9 @@ import javax.swing.border.TitledBorder;
 public class TabForside {
     
     public TabForside() {
-        
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        dbConnector.updateUsersHashMap();
     }
     
     /**
@@ -65,7 +71,8 @@ public class TabForside {
         tab1Layout.setConstraints(messagesPanel, gbcMP);
         tab1Panel.add(messagesPanel);
 
-        JPanel contactPanel = makeContactPanel();
+        
+        JPanel contactPanel = makeContactPanel();//dbConnector.makeContactPanel();
         JScrollPane scrollContactPanel = new JScrollPane(contactPanel);
         GridBagConstraints gbcCP = new GridBagConstraints();
         scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -170,6 +177,16 @@ public class TabForside {
         JPanel contactPanel = new JPanel();
         GridBagLayout contactLayout = new GridBagLayout();
         contactPanel.setLayout(contactLayout);
+        
+        
+        
+        System.out.println("Pre-FISH");
+        HashMap<String, Map> fishmap = dbConnector.getAllUsersHashMap();
+        for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
+            String key = entry.getKey();
+            System.out.println("FISH!");
+            System.out.println(key);
+        }
 
         GridBagConstraints gbcSearchField = new GridBagConstraints();
         JTextField searchField = new JTextField(20);

@@ -5,10 +5,12 @@
  */
 package db;
 
-import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.Remote;
+import javax.swing.JPanel;
 
 /**
  *
@@ -36,5 +38,14 @@ public interface dbConnectorRemote {
             tables, ArrayList<String> where);
     
     public int countRows(String column, String tableName);     
+    
+    //HER KOMMER UPDATE, må flyttes til annen ejb
+    public Map<String, String> eachUserMap(int fromIndex);
+    
+    public void updateUsersHashMap();
+    
+    public HashMap<String, Map> getAllUsersHashMap();
+    
+    public JPanel makeContactPanel();
     
 }
